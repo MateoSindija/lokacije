@@ -18,7 +18,7 @@ sample_size <- 4000  # Adjust the sample size as needed
 sampled_points <- points[sample(nrow(points), sample_size), ]
 
 for (i in 1:sample_size) {
-  if (sampled_points$elev[i] > 600) {
+  if (sampled_points$elev[i] > 800) {
     sampled_points$elev[i] <- 0
   }
 }
