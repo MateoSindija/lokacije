@@ -7,24 +7,21 @@ library(dplyr)
 #setwd('C://Users//Mateo//Desktop//Fakultet//Lokacije//Finalni projekt')
 setwd('C:/Users/Administrator/Documents/GitHub/lokacije')
 
-cres <- raster("./cres_donji_SRTM.tif")
+cres <- raster("./combinedImg_cropped.tif")
 
-x_min_lower <- 14.2
-x_max_lower <- 14.6
-y_min_lower <- 44.6
-y_max_lower <- 45 
-
-# Crop the raster to the specified extent
-cres_cropped <- crop(cres, extent(x_min_lower, x_max_lower, y_min_lower, y_max_lower))
-
-points <- rasterToPoints(cres_cropped)
+points <- rasterToPoints(cres)
 points <- as.data.frame(points)
-points <- data.frame(x = points$x, y = points$y, elev = points$cres_donji_SRTM)
+points <- data.frame(x = points$x, y = points$y, elev = points$combinedImg_cropped)
 
 set.seed(143)  # Set seed for reproducibility
-sample_size <- 3000  # Adjust the sample size as needed
+sample_size <- 4000  # Adjust the sample size as needed
 sampled_points <- points[sample(nrow(points), sample_size), ]
 
+for (i in 1:sample_size) {
+  if (sampled_points$elev[i] > 600) {
+    sampled_points$elev[i] <- 0
+  }
+}
 # Create ggplot with Voronoi tessellation
 voronoi_plot <- ggplot(sampled_points) +
   geom_voronoi(aes(x, y, fill = elev)) +
@@ -38,7 +35,7 @@ voronoi_plot <- ggplot(sampled_points) +
   
 # Filter out points with elevation 0
 filtered_points <- sampled_points %>%
-  filter(elev != 0)
+  filter(elev != 0) 
 
 # Add text labels for elevation values within each Voronoi cell (excluding elevation 0)
 label_plot <- voronoi_plot +
